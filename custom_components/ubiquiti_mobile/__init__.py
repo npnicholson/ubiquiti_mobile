@@ -16,7 +16,11 @@ from custom_components.ubiquiti_mobile.coordinator import UbiquitiDataUpdateCoor
 from custom_components.ubiquiti_mobile.data import SessionData
 
 from .api import UbiquitiMobileApiClient
-from .const import DOMAIN
+from .const import (
+    CONF_ENABLE_CLIENT_TRACKERS,
+    DEFAULT_ENABLE_CLIENT_TRACKERS,
+    DOMAIN,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -59,8 +63,15 @@ async def async_setup_entry(
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
 
+    # Determine which platforms to set up based on the config entry options.
+    platforms_to_setup: list[Platform] = [Platform.SENSOR]
+    if entry.options.get(
+        CONF_ENABLE_CLIENT_TRACKERS, DEFAULT_ENABLE_CLIENT_TRACKERS
+    ):
+        platforms_to_setup.append(Platform.DEVICE_TRACKER)
+
     # Set up each platform that is supported by this integration
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(entry, platforms_to_setup)
 
     return True
 

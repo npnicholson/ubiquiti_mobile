@@ -6,13 +6,18 @@ from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.core import callback
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from custom_components.ubiquiti_mobile.data import SessionData
 
 from .api import UbiquitiMobileApiClient
-from .const import DOMAIN
+from .const import (
+    CONF_ENABLE_CLIENT_TRACKERS,
+    DEFAULT_ENABLE_CLIENT_TRACKERS,
+    DOMAIN,
+)
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigFlowResult
@@ -74,4 +79,44 @@ class UbiquitiMobileConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         return self.async_show_form(
             step_id="user", data_schema=data_schema, errors=errors
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> config_entries.OptionsFlow:
+        """Create the options flow handler."""
+        return UbiquitiMobileOptionsFlowHandler(config_entry)
+
+
+class UbiquitiMobileOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle Ubiquiti Mobile Gateway options."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_ENABLE_CLIENT_TRACKERS,
+                    default=self.config_entry.options.get(
+                        CONF_ENABLE_CLIENT_TRACKERS,
+                        DEFAULT_ENABLE_CLIENT_TRACKERS,
+                    ),
+                ): bool,
+            }
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=data_schema,
         )

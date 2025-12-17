@@ -13,5 +13,16 @@
         "error": {
             "cannot_connect": "Failed to connect. Check host or token."
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Ubiquiti Mobile Options",
+                "description": "Choose whether to create device trackers for router clients.",
+                "data": {
+                    "enable_client_trackers": "Enable client device trackers"
+                }
+            }
+        }
     }
 }

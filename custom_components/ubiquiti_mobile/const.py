@@ -7,5 +7,8 @@ LOGGER: Logger = getLogger(__package__)
 DOMAIN = "ubiquiti_mobile"
 
 CONF_HOST = "host"
+CONF_ENABLE_CLIENT_TRACKERS = "enable_client_trackers"
 
-PLATFORMS: list[str] = ["sensor"]  # later you can add switch, binary_sensor, etc.
+DEFAULT_ENABLE_CLIENT_TRACKERS = True
+
+PLATFORMS: list[str] = ["sensor", "device_tracker"]
