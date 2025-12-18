@@ -72,6 +72,7 @@ async def async_setup_entry(
 
     # Set up each platform that is supported by this integration
     await hass.config_entries.async_forward_entry_setups(entry, platforms_to_setup)
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
 
