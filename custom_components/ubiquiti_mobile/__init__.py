@@ -16,11 +16,8 @@ from custom_components.ubiquiti_mobile.coordinator import UbiquitiDataUpdateCoor
 from custom_components.ubiquiti_mobile.data import SessionData
 
 from .api import UbiquitiMobileApiClient
-from .const import (
-    CONF_ENABLE_CLIENT_TRACKERS,
-    DEFAULT_ENABLE_CLIENT_TRACKERS,
-    DOMAIN,
-)
+from .const import DOMAIN
+from .helpers import is_client_tracker_enabled
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -65,9 +62,7 @@ async def async_setup_entry(
 
     # Determine which platforms to set up based on the config entry options.
     platforms_to_setup: list[Platform] = [Platform.SENSOR]
-    if entry.options.get(
-        CONF_ENABLE_CLIENT_TRACKERS, DEFAULT_ENABLE_CLIENT_TRACKERS
-    ):
+    if is_client_tracker_enabled(entry):
         platforms_to_setup.append(Platform.DEVICE_TRACKER)
 
     # Set up each platform that is supported by this integration

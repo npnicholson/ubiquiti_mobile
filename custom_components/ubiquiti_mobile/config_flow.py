@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.helpers import selector
+from homeassistant.helpers import config_validation as cv, selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from custom_components.ubiquiti_mobile.data import SessionData
@@ -15,9 +15,9 @@ from custom_components.ubiquiti_mobile.data import SessionData
 from .api import UbiquitiMobileApiClient
 from .const import (
     CONF_ENABLE_CLIENT_TRACKERS,
-    DEFAULT_ENABLE_CLIENT_TRACKERS,
     DOMAIN,
 )
+from .helpers import is_client_tracker_enabled
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigFlowResult
@@ -102,17 +102,22 @@ class UbiquitiMobileOptionsFlowHandler(config_entries.OptionsFlow):
     ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            enable_trackers = cv.boolean(
+                user_input[CONF_ENABLE_CLIENT_TRACKERS]
+            )
+            return self.async_create_entry(
+                title="",
+                data={CONF_ENABLE_CLIENT_TRACKERS: enable_trackers},
+            )
 
         data_schema = vol.Schema(
             {
                 vol.Required(
                     CONF_ENABLE_CLIENT_TRACKERS,
-                    default=self._config_entry.options.get(
-                        CONF_ENABLE_CLIENT_TRACKERS,
-                        DEFAULT_ENABLE_CLIENT_TRACKERS,
-                    ),
-                ): bool,
+                    default=is_client_tracker_enabled(self._config_entry),
+                ): selector.BooleanSelector(
+                    selector.BooleanSelectorConfig()
+                ),
             }
         )
 

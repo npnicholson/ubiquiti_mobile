@@ -12,6 +12,7 @@ from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, Device
 from custom_components.ubiquiti_mobile.const import DOMAIN
 from custom_components.ubiquiti_mobile.data import UbiquitiMobileStateData
 from custom_components.ubiquiti_mobile.entity import UbiquitiMobileEntity
+from custom_components.ubiquiti_mobile.helpers import is_client_tracker_enabled
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -29,6 +30,9 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up client trackers."""
+    if not is_client_tracker_enabled(entry):
+        return
+
     coordinator: UbiquitiDataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
     # Cache MACs so each tracker entity is only created once.
     tracked_clients: set[str] = set()

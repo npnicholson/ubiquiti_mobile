@@ -9,7 +9,7 @@
   "documentation": "https://github.com/npnicholson/ubiquiti-mobile",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/npnicholson/ubiquiti-mobile/issues",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "requirements": [
     "pydantic>=2.0.0"
   ]
