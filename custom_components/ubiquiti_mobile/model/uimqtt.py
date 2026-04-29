@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, ConfigDict
 
 from .jsonrpc import Request
 
@@ -50,11 +50,15 @@ class GetGPSInfoRequest(Request):
 class GetGPSInfoResponse(BaseModel):
     """Class that reflects a response from a GetGPSInfo Request."""
 
+    model_config = ConfigDict(extra="allow")
+
+    cell_tower_info: dict | None = None
     latitude: float
     longitude: float
     quality: int
     timestamp: int
-    hdop: float
+    hdop: float | None = None
+    horizontal_uncertainty_m: float | None = None
 
 
 ####################################################################################################
